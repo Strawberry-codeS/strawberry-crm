@@ -19,17 +19,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { count: refundCount, error: e2 } = await supabase
             .from('students')
             .select('*', { count: 'exact', head: true })
-            .not('pauseTime', 'is', null);
+            .not('pause_time', 'is', null);
         if (e2) throw e2;
 
-        // 查询招聘人数（stage = 'opportunity'，即机会阶段）
+        // 查询招聘人数（stage = 'opportunity'，即机会阶段�?
         const { count: recruitCount, error: e3 } = await supabase
             .from('students')
             .select('*', { count: 'exact', head: true })
             .eq('stage', 'opportunity');
         if (e3) throw e3;
 
-        // 返回前端期望的 DashboardStats 结构
+        // 返回前端期望�?DashboardStats 结构
         const stats = {
             classEnrollment: {
                 current: enrollmentCount ?? 0,

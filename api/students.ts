@@ -6,6 +6,28 @@ const supabase = createClient(
     process.env.SUPABASE_ANON_KEY!
 );
 
+// 数据库字段（snake_case）→ 前端格式（camelCase）
+function mapDbToStudent(row: Record<string, unknown>) {
+    return {
+        id: row.id,
+        name: row.name,
+        phone: row.phone,
+        age: row.age,
+        tags: row.tags || [],
+        status: row.status,
+        pauseTime: row.pause_time,
+        currentTask: row.current_task,
+        stage: row.stage,
+        avatar: row.avatar,
+        createdAt: row.created_at
+            ? new Date(row.created_at as string).toLocaleString('zh-CN', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit'
+            }).replace(/\//g, '-')
+            : '',
+    };
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     // ── GET /api/students?search=xxx ──────────────────────────
     if (req.method === 'GET') {
@@ -21,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const { data, error } = await query;
         if (error) return res.status(500).json({ error: error.message });
-        return res.status(200).json(data);
+        return res.status(200).json((data || []).map(mapDbToStudent));
     }
 
     // ── POST /api/students ────────────────────────────────────
@@ -51,7 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .single();
 
         if (error) return res.status(500).json({ error: error.message });
-        return res.status(201).json(data);
+        return res.status(201).json(mapDbToStudent(data));
     }
 
     // ── DELETE /api/students?id=xxx ───────────────────────────
