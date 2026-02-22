@@ -55,7 +55,7 @@ export async function updateStudent(id: string, input: Partial<CreateStudentInpu
 }
 
 export async function deleteStudent(id: string): Promise<void> {
-    const res = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${BASE_URL}?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
     if (!res.ok) {
         const err = await res.json().catch(() => ({ error: 'Unknown error' }));
         throw new Error(err.error || 'Failed to delete student');
